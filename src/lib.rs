@@ -1,4 +1,5 @@
 pub mod nohashmap;
+pub type NoHashMap<K,V> = nohashmap::NoHashMapMultiVec<K,V>;
 
 
 #[cfg(test)]

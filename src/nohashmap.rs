@@ -671,18 +671,4 @@ mod tests {
         assert!(nhmvt.is_empty());
     }
 
-    // #[test]
-    // fn test_iter() {
-    //     let hm: HashMap<usize, usize> = HashMap::from_iter(vec![(0, 1), (2, 3), (4, 5)]);
-    //     let mut nhmmv = NoHashMapMultiVec::new();
-    //     let mut nhmvt = NoHashMapVecTuple::new();
-    //
-    //     for (k, v) in vec![(0, 1), (2, 3), (4, 5), (6, 7)].into_iter() {
-    //         nhmmv.insert(k, v);
-    //         nhmvt.insert(k, v);
-    //     }
-    //     assert_equal(hm.iter().sorted(), nhmmv.iter().sorted());
-    //     assert_equal(hm.into_iter().sorted(), nhmvt.iter().map(|x| *x).sorted());
-    // }
-
 }
