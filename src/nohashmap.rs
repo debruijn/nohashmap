@@ -379,6 +379,63 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_insert_get() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+        nhmmv.insert(0, 1);
+        nhmvt.insert(0, 1);
+        assert_eq!(nhmmv.get(&0), Some(&1));
+        assert_eq!(nhmvt.get(&0), Some(&1));
+    }
+
+    #[test]
+    fn test_get_mut() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+        nhmmv.insert(0, 1);
+        nhmvt.insert(0, 1);
+        *nhmmv.get_mut(&0).unwrap() = 3;
+        assert_eq!(nhmmv.get(&0), Some(&3));
+        *nhmvt.get_mut(&0).unwrap() = 3;
+        assert_eq!(nhmvt.get(&0), Some(&3));
+    }
+
+    #[test]
+    fn test_get_key_value() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+        nhmmv.insert(0, 1);
+        nhmvt.insert(0, 1);
+        assert_eq!(nhmmv.get_key_value(&0), Some((&0, &1)));
+        assert_eq!(nhmvt.get_key_value(&0), Some(&(0, 1)));
+    }
+
+    #[test]
+    fn test_remove() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+        nhmmv.insert(0, 1);
+        nhmvt.insert(0, 1);
+        nhmmv.remove(&0);
+        nhmvt.remove(&0);
+        assert_eq!(nhmmv.get(&0), None);
+        assert_eq!(nhmvt.get(&0), None);
+    }
+
+    #[test]
+    fn test_swap_remove() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+        nhmmv.insert(0, 1);
+        nhmvt.insert(0, 1);
+        nhmmv.swap_remove(&0);
+        nhmvt.swap_remove(&0);
+        assert_eq!(nhmmv.get(&0), None);
+        assert_eq!(nhmvt.get(&0), None);
+    }
+
+
+    #[test]
     fn test_float() {
         let mut nhmmv = NoHashMapMultiVec::new();
         let mut nhmvt = NoHashMapVecTuple::new();
@@ -529,6 +586,23 @@ mod tests {
     }
 
     #[test]
+    fn test_contains_key() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+        let keys = [0, 2, 4, 6];
+
+        for (k, v) in vec![(0, 1), (2, 3), (4, 5), (6, 7)].into_iter() {
+            nhmmv.insert(k, v);
+            nhmvt.insert(k, v);
+        }
+
+        for k in keys.iter() {
+            assert!(nhmmv.contains_key(k));
+            assert!(nhmvt.contains_key(k));
+        }
+    }
+
+    #[test]
     fn test_is_empty() {
         let mut nhmmv = NoHashMapMultiVec::new();
         let mut nhmvt = NoHashMapVecTuple::new();
@@ -596,5 +670,19 @@ mod tests {
         assert!(nhmmv.is_empty());
         assert!(nhmvt.is_empty());
     }
+
+    // #[test]
+    // fn test_iter() {
+    //     let hm: HashMap<usize, usize> = HashMap::from_iter(vec![(0, 1), (2, 3), (4, 5)]);
+    //     let mut nhmmv = NoHashMapMultiVec::new();
+    //     let mut nhmvt = NoHashMapVecTuple::new();
+    //
+    //     for (k, v) in vec![(0, 1), (2, 3), (4, 5), (6, 7)].into_iter() {
+    //         nhmmv.insert(k, v);
+    //         nhmvt.insert(k, v);
+    //     }
+    //     assert_equal(hm.iter().sorted(), nhmmv.iter().sorted());
+    //     assert_equal(hm.into_iter().sorted(), nhmvt.iter().map(|x| *x).sorted());
+    // }
 
 }
