@@ -1,6 +1,6 @@
-use itertools::{assert_equal, izip, Itertools};
+use itertools::{izip, Itertools};
 use std::cmp::min;
-use std::collections::{HashMap, TryReserveError};
+use std::collections::TryReserveError;
 use std::fmt;
 use std::fmt::Debug;
 use std::iter::Zip;
@@ -374,6 +374,8 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+    use itertools::assert_equal;
     use super::*;
 
     #[test]
@@ -525,4 +527,74 @@ mod tests {
         assert_equal(nhmmv.into_keys(), keys.into_iter());
         assert_equal(nhmvt.into_keys(), keys.into_iter());
     }
+
+    #[test]
+    fn test_is_empty() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+
+        assert!(nhmmv.is_empty());
+        assert!(nhmvt.is_empty());
+
+        for (k, v) in vec![(0, 1), (2, 3), (4, 5), (6, 7)].into_iter() {
+            nhmmv.insert(k, v);
+            nhmvt.insert(k, v);
+        }
+
+        assert!(!nhmmv.is_empty());
+        assert!(!nhmvt.is_empty());
+
+    }
+
+    #[test]
+    fn test_capacity() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+
+        assert_eq!(nhmmv.capacity(), 0);
+        assert_eq!(nhmvt.capacity(), 0);
+
+        for (k, v) in vec![(0, 1), (2, 3), (4, 5), (6, 7)].into_iter() {
+            nhmmv.insert(k, v);
+            nhmvt.insert(k, v);
+        }
+
+        assert_eq!(nhmmv.capacity(), nhmvt.capacity());
+    }
+
+    #[test]
+    fn test_clear() {
+        let mut nhmmv = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+
+        for (k, v) in vec![(0, 1), (2, 3), (4, 5), (6, 7)].into_iter() {
+            nhmmv.insert(k, v);
+            nhmvt.insert(k, v);
+        }
+
+        nhmmv.clear();
+        nhmvt.clear();
+
+        assert!(nhmmv.is_empty());
+        assert!(nhmvt.is_empty());
+
+    }
+
+    #[test]
+    fn test_drain() {
+        let hm: HashMap<usize, usize> = HashMap::from_iter(vec![(0, 1), (2, 3), (4, 5), (6, 7)]);
+        let mut nhmmv: NoHashMapMultiVec<usize, usize> = NoHashMapMultiVec::new();
+        let mut nhmvt = NoHashMapVecTuple::new();
+
+        for (k, v) in vec![(0, 1), (2, 3), (4, 5), (6, 7)].into_iter() {
+            nhmmv.insert(k, v);
+            nhmvt.insert(k, v);
+        }
+        assert_equal(hm.clone().into_iter().sorted(), nhmmv.drain().sorted());
+        assert_equal(hm.into_iter().sorted(), nhmvt.drain().sorted());
+
+        assert!(nhmmv.is_empty());
+        assert!(nhmvt.is_empty());
+    }
+
 }
