@@ -8,6 +8,20 @@ use std::slice::{Iter, IterMut};
 use std::vec::{Drain, IntoIter};
 
 #[derive(Clone, Default)]
+/// A NoHashMap using two Vec's to collect keys and values separately
+///
+/// # Examples
+///
+/// ```
+///  use itertools::assert_equal;
+///  use nohashmap::NoHashMapMultiVec;
+///  let mut nhm = NoHashMapMultiVec::new();
+///  for (k, v) in vec![(0.1, 1.2), (2.3, 3.4), (4.5, 5.6), (6.7, 7.8)].into_iter() {
+///      nhm.insert(k, v);
+///     }
+///  assert_equal(nhm.keys(), vec![0.1, 2.3, 4.5, 6.7].into_iter());
+///  assert_equal(nhm.values(), vec![1.2, 3.4, 5.6, 7.8].into_iter());
+/// ```
 pub struct NoHashMapMultiVec<K, V> {
     vec_k: Vec<K>,
     vec_v: Vec<V>,
@@ -207,6 +221,20 @@ where
 }
 
 #[derive(Clone, Default)]
+/// A NoHashMap using a Vec of a key-value tuple to collect them jointly
+///
+/// # Examples
+///
+/// ```
+///  use itertools::assert_equal;
+///  use nohashmap::NoHashMapVecTuple;
+///  let mut nhm = NoHashMapVecTuple::new();
+///  for (k, v) in vec![(0.1, 1.2), (2.3, 3.4), (4.5, 5.6), (6.7, 7.8)].into_iter() {
+///      nhm.insert(k, v);
+///     }
+///  assert_equal(nhm.clone().into_keys(), vec![0.1, 2.3, 4.5, 6.7].into_iter());
+///  assert_equal(nhm.into_values(), vec![1.2, 3.4, 5.6, 7.8].into_iter());
+/// ```
 pub struct NoHashMapVecTuple<K, V> {
     vec: Vec<(K, V)>,
 }
@@ -229,7 +257,11 @@ impl<K, V> NoHashMapVecTuple<K, V> {
     }
 
     pub fn values_mut<'a>(&mut self) -> IntoIter<&mut V> {
-        self.vec.iter_mut().map(|(_, v)| v).collect_vec().into_iter()
+        self.vec
+            .iter_mut()
+            .map(|(_, v)| v)
+            .collect_vec()
+            .into_iter()
     }
 
     pub fn into_values(self) -> IntoIter<V> {
@@ -241,7 +273,11 @@ impl<K, V> NoHashMapVecTuple<K, V> {
     }
 
     pub fn keys_mut<'a>(&mut self) -> IntoIter<&mut K> {
-        self.vec.iter_mut().map(|(k, _)| k).collect_vec().into_iter()
+        self.vec
+            .iter_mut()
+            .map(|(k, _)| k)
+            .collect_vec()
+            .into_iter()
     }
 
     pub fn into_keys<'a>(self) -> IntoIter<K> {
@@ -374,9 +410,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-    use itertools::assert_equal;
     use super::*;
+    use itertools::assert_equal;
+    use std::collections::HashMap;
 
     #[test]
     fn test_insert_get() {
@@ -434,7 +470,6 @@ mod tests {
         assert_eq!(nhmvt.get(&0), None);
     }
 
-
     #[test]
     fn test_float() {
         let mut nhmmv = NoHashMapMultiVec::new();
@@ -472,8 +507,14 @@ mod tests {
             nhmvt.insert(k, v);
         }
 
-        nhmmv.iter_mut().for_each(|(k, v)| {*k +=10; *v += 10} );
-        nhmvt.iter_mut().for_each(|(k, v)| {*k +=10; *v += 10} );
+        nhmmv.iter_mut().for_each(|(k, v)| {
+            *k += 10;
+            *v += 10
+        });
+        nhmvt.iter_mut().for_each(|(k, v)| {
+            *k += 10;
+            *v += 10
+        });
 
         assert_equal(nhmmv.iter(), nhmvt.iter().map(|x| (&x.0, &x.1)));
         assert!(nhmmv.values().iter().min().unwrap() > &10);
@@ -533,8 +574,8 @@ mod tests {
             nhmvt.insert(k, v);
         }
 
-        nhmmv.values_mut().for_each(|v| {*v += 10} );
-        nhmvt.values_mut().for_each(|v| {*v += 10} );
+        nhmmv.values_mut().for_each(|v| *v += 10);
+        nhmvt.values_mut().for_each(|v| *v += 10);
 
         assert_equal(nhmmv.values(), nhmvt.values());
     }
@@ -549,8 +590,8 @@ mod tests {
             nhmvt.insert(k, v);
         }
 
-        nhmmv.keys_mut().for_each(|k| {*k += 10} );
-        nhmvt.keys_mut().for_each(|k| {*k += 10} );
+        nhmmv.keys_mut().for_each(|k| *k += 10);
+        nhmvt.keys_mut().for_each(|k| *k += 10);
 
         assert_equal(nhmmv.keys(), nhmvt.keys());
     }
@@ -617,7 +658,6 @@ mod tests {
 
         assert!(!nhmmv.is_empty());
         assert!(!nhmvt.is_empty());
-
     }
 
     #[test]
@@ -651,7 +691,6 @@ mod tests {
 
         assert!(nhmmv.is_empty());
         assert!(nhmvt.is_empty());
-
     }
 
     #[test]
@@ -670,5 +709,4 @@ mod tests {
         assert!(nhmmv.is_empty());
         assert!(nhmvt.is_empty());
     }
-
 }
