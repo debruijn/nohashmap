@@ -19,8 +19,8 @@ use std::vec::{Drain, IntoIter};
 ///  for (k, v) in vec![(0.1, 1.2), (2.3, 3.4), (4.5, 5.6), (6.7, 7.8)].into_iter() {
 ///      nhm.insert(k, v);
 ///     }
-///  assert_equal(nhm.keys(), vec![0.1, 2.3, 4.5, 6.7].into_iter());
-///  assert_equal(nhm.values(), vec![1.2, 3.4, 5.6, 7.8].into_iter());
+///  assert_equal(nhm.clone().into_keys(), vec![0.1, 2.3, 4.5, 6.7].into_iter());
+///  assert_equal(nhm.into_values(), vec![1.2, 3.4, 5.6, 7.8].into_iter());
 /// ```
 pub struct NoHashMapMultiVec<K, V> {
     vec_k: Vec<K>,
